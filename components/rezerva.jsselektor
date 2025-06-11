@@ -1,0 +1,85 @@
+  <TextInput 
+         maxLength={6}
+         placeholder="TopSet"
+         value={loadInput}
+         onChangeText={num=>handleLoadInput(num)}
+         keyboardType="numeric"
+
+         />
+{/* //kad lik unese kilazu za topset kalkluira se backof
+         //ovo triba moc imat 'default' vrijednosti ali i da se mogu custom unosit
+         // takoder bilo bi bilesno spojit rpe calculator na ovo tako da ako je top set rpe 7
+         // rpe calculator racuna backof da bude rpe 7 na te repse, to bi moga bit kao taj default odabir */}
+      <Text >{
+         
+      loadInput && !isNaN(parseInt(loadInput)) 
+         ? `${Math.round((parseInt(loadInput)*0.9) / 2.5) * 2.5} kg` 
+         : '0 kg'
+      }</Text>
+     
+         </View>
+         
+
+         <View  >
+         
+         <Text >RPE</Text>
+         <View >
+         <TextInput maxLength={4}
+         placeholder="5"
+         keyboardType="numeric"
+         style={styles.textAlign}/>
+
+          <TextInput maxLength={4}
+         placeholder="5"
+         keyboardType="numeric"
+         style={styles.textAlign}/> 
+         
+         <TextInput maxLength={4}
+         placeholder="5"
+         keyboardType="numeric"
+         style={styles.textAlign}/>
+         </View>
+         </View>
+
+      </View>
+
+   );
+}
+
+export default Selector;
+
+const styles = StyleSheet.create({
+   defaultContainter: {
+      
+      borderWidth: 1,
+      //borderColor: 'blue',
+      width: '85%',
+      flexDirection: 'row',
+      marginHorizontal: 24,
+      
+      justifyContent: 'space-between',
+      padding: 13,
+      position: 'static'
+      
+    
+      
+    },
+    topRow:{
+      alignItems: 'flex-start',
+      textAlign: 'center'
+    },
+    textAlign:{
+      textAlign:'center',
+      marginVertical: 3,
+    },
+   
+    colums:{
+      justifyContent: 'center',
+      padding:2,
+      
+      
+    },
+    Text:{
+      margin:10
+    }
+})
