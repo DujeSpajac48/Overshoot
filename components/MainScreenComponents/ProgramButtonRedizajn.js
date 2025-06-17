@@ -9,6 +9,10 @@ import {
   Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+const { width, height } = Dimensions.get('window');
+import Icon from 'react-native-vector-icons/Ionicons';
 
 
 export default function ProgramButtonRedizajn({
@@ -19,13 +23,20 @@ export default function ProgramButtonRedizajn({
   date = '1.1.2020',
   children = 'Who made it',
   imageSource = require('./legs.png'),
-  id,onDelete
-}) {
-  const navigation = useNavigation();
+  id,
+  onDelete,
+  onPress,
 
-  // /** Mapiraj težinu na boje */
+}) {
+
+
+  const navigation = useNavigation();
+  
+
+  // Boje za težinu programa
+  const safeDifficulty = typeof difficulty === 'string' ? difficulty.toLowerCase() : '';
   const levelColor = (() => {
-    switch (difficulty.toLowerCase()) {
+    switch (safeDifficulty) {
       case 'beginner':
         return '#55D855';
       case 'intermediate':
@@ -33,32 +44,30 @@ export default function ProgramButtonRedizajn({
       case 'advanced':
         return '#FF715B';
       default:
-        return '#555'; // sivo za “Level”
+        return '#555'; // Ako nije prepoznato
     }
   })();
 
   return (
+    
     <Pressable
-      onPress={() => navigation.navigate('Program')}
+      onPress={()=> navigation.navigate('Program')}
       onLongPress={() => onDelete(id)}
-      style={({ pressed }) => [
-        { opacity: pressed ? 0.3 : 3,
-         }, 
-  ]}
->
+      style={({ pressed }) => [{ transform: [{ scale: pressed ? 0.98 : 1 }] }]}
+    >
       <View style={styles.programBox}>
-        {/* ---------------- gornji dio ---------------- */}
         <View style={styles.contentContainer}>
-          {/* Slika */}
           <View style={styles.imageContainer}>
-            <Image source={imageSource} style={styles.programImage} />
+          <Image source={imageSource} style={styles.programImage} />
+      
           </View>
-
-          {/* Info */}
           <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>{title}</Text>
-            <Text style={styles.infoText}>{duration}</Text>
-            <Text style={styles.infoText}>{programType}</Text>
+            <Text style={styles.infoText}>
+              <Icon name='barbell' size={18}/>  {title}</Text>
+            <Text style={styles.infoText}>
+              <Icon name="calendar-outline" size={18}/>  {duration}</Text>
+            <Text style={styles.infoText}>
+              <Icon name='bar-chart-outline' size={18}/>  {programType}</Text>
 
             {/* Level indikator */}
             <View style={styles.levelContainer}>
@@ -68,25 +77,20 @@ export default function ProgramButtonRedizajn({
                   { backgroundColor: levelColor, borderColor: levelColor },
                 ]}
               >
-                <View
-                  style={[
-                    styles.levelIndicator,
-                    { backgroundColor: '#fff' },
-                  ]}
-                />
+                
+                <View style={[styles.levelIndicator, { backgroundColor: '#fff' }]} />
               </View>
               <Text style={styles.levelText}>{difficulty}</Text>
             </View>
           </View>
         </View>
 
-        {/* ---------------- footer ---------------- */}
+        {/* Footer */}
         <View style={styles.footer}>
           <View>
             <Text style={styles.lightText}>Made by:</Text>
             <Text style={styles.footerText}>{children}</Text>
           </View>
-          
           <View>
             <Text style={styles.lightText}>Updated:</Text>
             <Text style={styles.footerText}>{date}</Text>
@@ -97,7 +101,20 @@ export default function ProgramButtonRedizajn({
   );
 }
 
-/* ------------ STILOVI ------------ */
+// PropTypes za provjeru tipova
+ProgramButtonRedizajn.propTypes = {
+  title: PropTypes.string,
+  difficulty: PropTypes.string,
+  duration: PropTypes.string,
+  programType: PropTypes.string,
+  date: PropTypes.string,
+  children: PropTypes.string,
+  imageSource: PropTypes.any,
+  id: PropTypes.any.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};
+
+// Stilovi
 const styles = StyleSheet.create({
   programBox: {
     borderWidth: 0.2,
@@ -105,8 +122,8 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 17,
     borderBottomRightRadius: 17,
     borderColor: '#555555',
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.32,
+    width: width - 20, // Smanjio širinu za malo razmaka
+    height: height * 0.32,
     marginVertical: 8,
     borderRadius: 16,
     overflow: 'hidden',
@@ -129,6 +146,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 17,
   },
   infoContainer: {
+    overflow: 'hidden',
+    borderRightWidth: 1,
+    borderColor: 'lightgrey',
+    // borderWidth: 1,
     width: '60%',
     height: '100%',
     padding: 18,
@@ -144,8 +165,9 @@ const styles = StyleSheet.create({
       ios: { marginVertical: 10 },
       android: { marginVertical: 6 },
     }),
+    width: 200,
+    // borderWidth: 1,
   },
-  /* Level */
   levelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -170,7 +192,6 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     fontSize: 16,
   },
-  /* Footer */
   footer: {
     height: '25%',
     backgroundColor: '#E6E6E6',

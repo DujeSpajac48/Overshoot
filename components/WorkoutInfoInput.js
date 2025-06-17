@@ -10,7 +10,9 @@ import { Text,TextInput,View ,StyleSheet} from "react-native";
 export default function WorkoutInfoInput(
    {inputGuide='Sta je ode',
    inputGuideSugestion= 'Sta bi se tribalo unit',
-   placeHolderText='Ode se to unosi',}){
+   placeHolderText='Ode se to unosi',
+   value,onChangeText
+}){
 
 
 
@@ -29,7 +31,8 @@ export default function WorkoutInfoInput(
          </View>
          <TextInput
          
-
+         value={value}
+         onChangeText={onChangeText}
          style={styles.workoutInfo}
          placeholder={placeHolderText}
          placeholderTextColor={'#A0A0A0'}

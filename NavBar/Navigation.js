@@ -10,8 +10,8 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MainScreen from '../screens/MainScreen';
 import ProgramScreen from '../screens/ProgramScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import NewWorkoutScreen from '../screens/NewWorkoutScreen'; // dodaj ovo
-
+import NewWorkoutScreen from '../screens/NewWorkoutScreen'; 
+import LoginScreen from '../screens/LoginScreen';
 import Colors from '../constants/Colors';
 
 const Tab = createBottomTabNavigator();

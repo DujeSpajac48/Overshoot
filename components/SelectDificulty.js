@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 
-export default function SelectDifficulty() {
-  const [selected, setSelected] = useState('Beginner');
+import { useDispatch } from 'react-redux';
+import { setDiff } from '../store/workoutSlice';
+
+export default function SelectDifficulty({onSelect}) {
+  const dispatch = useDispatch();
+  const [selected, setSelected] = useState('');
 
   const options = [
    { label: 'Beginner', color: '#40916c', border: '#009f78' },
@@ -17,7 +21,12 @@ export default function SelectDifficulty() {
         return (
           <Pressable
             key={option.label}
-            onPress={() => setSelected(option.label)}
+            onPress={
+              () => {setSelected(option.label);
+              onSelect((option.label))
+              
+            }
+            }
             style={[
               styles.option,
               {

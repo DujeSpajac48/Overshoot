@@ -9,17 +9,50 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  Pressable,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import { useEffect } from 'react';
 import Colors from '../constants/Colors';
 import TreningBlok from '../components/TreningBlok';
 import ExitButton from '../components/ExitButton';
 import { useState } from 'react';
 
 export default function ProgramScreen() {
-  // ------- state blokovi -----------------
+
+  // stvari za stopericu
+  const [isRunning,setIsRunning] = useState(false);
+  const [time,setTime] = useState(0);
+
+  const handleStartStop =()=>{
+    setIsRunning(!isRunning);
+  }
+
+  useEffect(() => {
+    let interval;
+    if (isRunning) {
+      interval = setInterval(() => {
+        setTime(prevTime => prevTime + 10); // 10ms
+      }, 10);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning]);
+
+
+  const formatTime = (ms) => {
+    const hours = Math.floor(ms / 3600000);
+    const minutes = Math.floor((ms % 3600000) / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+
+
+    return `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
+  };
+
+
+//stvari za trening
   const [trening, addTrening] = useState([{ id: Date.now() }]);
+
 
   function treningPressHandler() {
     addTrening(prev => [...prev, { id: Date.now() }]);
@@ -35,17 +68,26 @@ export default function ProgramScreen() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <StatusBar style="auto" />
 
-        {/* ---------- header ---------- */}
-        <View style={styles.flexEnd}>
-          <ExitButton style={styles.buttonOverWrite}>Exit</ExitButton>
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>Week 1, D1</Text>
+        <View style={styles.headerContainer}>
+          <View style={styles.dayContainer}>
+            <Text style={styles.dayText}>Day 1</Text>
+          </View>
+          <Pressable
+          onPress={handleStartStop}
+          style={({ pressed })=>[styles.stopericaContainer,
+            pressed && styles.pressedStyle]
+          }>
+          <View >
+            <Text style={styles.startStopText}> {!isRunning ?'Start':'Stop'}</Text>
+            <Text> {formatTime(time)}</Text>
+          </View>
+          </Pressable>
+          <View style={styles.SaveContainer}>
+            <Text style={styles.dayText}> Save</Text>
+
           </View>
         </View>
-
-
 
         <KeyboardAvoidingView
           style={{ flex: 1 }}
@@ -99,20 +141,32 @@ const styles = StyleSheet.create({
     gap: 40,
   },
   headerContainer: {
-    borderBottomWidth: 0.5,
-    marginBottom: 20,
-    opacity: 0.7,
-    backgroundColor: 'black',
-    borderWidth: 1,
-    borderColor: '#B65E00',
-    width: '85%',
-    borderBottomLeftRadius: 14,
+    borderBottomWidth: 0.2,
+    borderColor: '#555555',
+    height: '8%',
+    justifyContent: 'space-evenly',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  dayContainer:{
+    
+  },
+  dayText:{
+    fontWeight: 'semibold',
+    fontSize: 20
   },
   headerText: {
     paddingLeft: 20,
     fontSize: 40,
     fontWeight: 'bold',
     color: 'white',
+  },
+  startStopText:{
+    alignSelf: 'center',
+    fontWeight: 'bold'
+  },
+  pressedStyle:{
+    transform: [{scale: 1.1}]
   },
   container: {
     // flex: 1,

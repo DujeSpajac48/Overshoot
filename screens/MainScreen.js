@@ -7,7 +7,7 @@ import ProgramButtonRedizajn from '../components/MainScreenComponents/ProgramBut
 import Colors from '../constants/Colors';
 import SelectionBar from '../components/SelectionBar';
 import { useNavigation } from "@react-navigation/native";
-
+import { useSelector } from 'react-redux';
 
 export default function MainScreen() {
   const navigation= useNavigation();
@@ -68,9 +68,28 @@ export default function MainScreen() {
     );
   }
 
+
+  const  {split,duration,focus,diff,img}
+     = useSelector(
+    (state)=>({
+      split: state.split,
+      duration: state.duration,
+      focus: state.focus,
+      diff: state.diff,
+      img: state.img
+    })
+    
+  
+  
+  );
+
+  const workouts = useSelector((state)=>state.workout.workouts);
+console.log('dkldkl ',workouts);
+
+
+
   return (
     <>
-      <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <View style={styles.headerContainer}>
           <Text style={styles.textStyle}>OVER</Text>
@@ -101,19 +120,25 @@ export default function MainScreen() {
             </View>
           </View>
 
-          {day.map((item) => (
-            <ProgramButtonRedizajn
-              key={item.id}
-              id={item.id}
-              title={item.title}
-              difficulty={item.difficulty}
-              duration={item.duration}
-              programType={item.programType}
-              date={item.date}
-              children={item.children}
-              onDelete={deleteWorkoutDay}
-            />
-          ))}
+          {workouts.map(w => (
+  <ProgramButtonRedizajn
+    key={w.id}
+    id={w.id}
+    title={w.split}
+    difficulty={w.diff}
+    duration={w.duration}
+    programType={w.focus}
+    date={w.date}
+    imageSource={{ uri: w.img }} 
+    onPress={() => navigation.navigate('Program', { 
+      workoutId: w.id,
+      workoutData: w  
+    })}
+    onDelete={deleteWorkoutDay}
+  />
+))}
+
+          
         </ScrollView>
       </SafeAreaView>
     </>
