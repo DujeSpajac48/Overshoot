@@ -1,7 +1,7 @@
 import {View, Text, StyleSheet, TextInput, Platform, Pressable} from 'react-native';
 import Icon from "react-native-vector-icons/Ionicons";
 
-export default function SelectionBar({setNum,onDelete,id}) {
+export default function Selector({setNum,onDelete,id}) {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.rowContainer}>

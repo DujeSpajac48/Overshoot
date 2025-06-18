@@ -51,7 +51,7 @@ export default function ProgramButtonRedizajn({
   return (
     
     <Pressable
-      onPress={()=> navigation.navigate('Program')}
+      onPress={()=> navigation.navigate('WeekScreen')}
       onLongPress={() => onDelete(id)}
       style={({ pressed }) => [{ transform: [{ scale: pressed ? 0.98 : 1 }] }]}
     >

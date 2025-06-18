@@ -11,7 +11,8 @@ import MainScreen from '../screens/MainScreen';
 import ProgramScreen from '../screens/ProgramScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import NewWorkoutScreen from '../screens/NewWorkoutScreen'; 
-import LoginScreen from '../screens/LoginScreen';
+import WeekScreen from '../screens/WeeksScreen';
+// import LoginScreen from '../screens/LoginScreen';
 import Colors from '../constants/Colors';
 
 const Tab = createBottomTabNavigator();
@@ -56,7 +57,7 @@ export default function Navigation() {
 
         <Stack.Screen name="RootTabs" component={TabNavigator} />
 
-
+        <Stack.Screen name="WeekScreen" component={WeekScreen}/>
         <Stack.Screen name="NewWorkoutScreen" component={NewWorkoutScreen} />
         <Stack.Screen  name = "MainScreen" component={MainScreen}/>
       </Stack.Navigator>
