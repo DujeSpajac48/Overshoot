@@ -7,85 +7,133 @@ import ProgramButtonRedizajn from '../components/MainScreenComponents/ProgramBut
 import Colors from '../constants/Colors';
 import SelectionBar from '../components/SelectionBar';
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from 'react-redux';
+
+
+// import { useSelector } from 'react-redux';
+
+
+//sqlite
+import { useIsFocused } from '@react-navigation/native';
+
+import * as SQLite from 'expo-sqlite';
+import { useEffect } from 'react';
 
 export default function MainScreen() {
   const navigation= useNavigation();
-  const [day, setDay] = useState([
-    { 
-      id: Date.now(),
-      title: "Legs",
-      difficulty: "Beginner",
-      duration: "30-60",
-      programType: "Powerlifting",
-      date: "1.12.2025",
-      children: "Coach Tony"
-    },
-    { 
-      id: Date.now() + 1,
-      title: "Chest",
-      difficulty: "Intermediate",
-      duration: "60-90",
-      programType: "Bodybuilding",
-      date: "2.10.2024",
-      children: "Ognjen Durdevic"
-    },
-    { 
-      id: Date.now() + 2,
-      title: "Back",
-      difficulty: "Advanced",
-      duration: "30-60",
-      programType: "Functional",
-      date: "1.11.2025",
-      children: "Moja mama"
-    }
-  ]);
-  
-  function addWorkoutDay() {
-    const newWorkout = {
-      id: Date.now(),
-      title: "New Workout",
-      difficulty: "Beginner",
-      duration: "30-60",
-      programType: "General",
-      date: new Date().toLocaleDateString(),
-      children: "You"
-    };
-    setDay(prev => [...prev, newWorkout]);
-  }
-  
-  function deleteWorkoutDay(idToRemove) {
-    Alert.alert(
-      "Delete Workout",
-      "Are you sure you want to delete this workout?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Delete", 
-          onPress: () => setDay(prev => prev.filter(item => item.id !== idToRemove)) 
-        },
-      ]
-    );
-  }
 
 
-  const  {split,duration,focus,diff,img}
-     = useSelector(
-    (state)=>({
-      split: state.split,
-      duration: state.duration,
-      focus: state.focus,
-      diff: state.diff,
-      img: state.img
-    })
+  //REUDXXXX😂
+//   const [day, setDay] = useState([
+//     { 
+//       id: Date.now(),
+//       title: "Legs",
+//       difficulty: "Beginner",
+//       duration: "30-60",
+//       programType: "Powerlifting",
+//       date: "1.12.2025",
+//       children: "Coach Tony"
+//     },
+//     { 
+//       id: Date.now() + 1,
+//       title: "Chest",
+//       difficulty: "Intermediate",
+//       duration: "60-90",
+//       programType: "Bodybuilding",
+//       date: "2.10.2024",
+//       children: "Ognjen Durdevic"
+//     },
+//     { 
+//       id: Date.now() + 2,
+//       title: "Back",
+//       difficulty: "Advanced",
+//       duration: "30-60",
+//       programType: "Functional",
+//       date: "1.11.2025",
+//       children: "Moja mama"
+//     }
+//   ]);
+  
+//   function addWorkoutDay() {
+//     const newWorkout = {
+//       id: Date.now(),
+//       title: "New Workout",
+//       difficulty: "Beginner",
+//       duration: "30-60",
+//       programType: "General",
+//       date: new Date().toLocaleDateString(),
+//       children: "You"
+//     };
+//     setDay(prev => [...prev, newWorkout]);
+//   }
+  
+//   function deleteWorkoutDay(idToRemove) {
+//     Alert.alert(
+//       "Delete Workout",
+//       "Are you sure you want to delete this workout?",
+//       [
+//         { text: "Cancel", style: "cancel" },
+//         { 
+//           text: "Delete", 
+//           onPress: () => setDay(prev => prev.filter(item => item.id !== idToRemove)) 
+//         },
+//       ]
+//     );
+//   }
+
+
+//   const  {split,duration,focus,diff,img}
+//      = useSelector(
+//     (state)=>({
+//       split: state.split,
+//       duration: state.duration,
+//       focus: state.focus,
+//       diff: state.diff,
+//       img: state.img
+//     })
     
   
   
-  );
+//   );
 
-  const workouts = useSelector((state)=>state.workout.workouts);
-console.log('dkldkl ',workouts);
+//   const workouts = useSelector((state)=>state.workout.workouts);
+// console.log('dkldkl ',workouts);
 
+//sql stvari
+
+  const [ db, setDb] = useState(null);
+  const [workout, setWorkout] = useState([]);
+
+useEffect(()=>{
+  const loadDB = async()=>{
+    try {
+      const database = await SQLite.openDatabaseAsync('NewBlock.db');
+      setDb(database);
+
+    }catch (error){
+      Alert.alert("Greska","Greska pri otvaranju baze NewBlock");
+    }
+  }
+  loadDB();
+},[]);
+
+const isFocused = useIsFocused();
+
+  useEffect(()=>{
+    if (!db) return;
+
+    const fetchdata = async()=>{
+      try{
+        const data = await db.getAllAsync('SELECT * FROM users ORDER BY createdAt DESC');
+        setWorkout(data);
+        console.log("baza ", data);
+      }catch (error){
+        Alert.alert("Greska",'Podatci nisu upecani'); 
+      }
+    };
+    fetchdata();
+  },[db,isFocused]);
+
+  const sortedWorkouts = [...workout].reverse();
 
 
   return (
@@ -119,24 +167,66 @@ console.log('dkldkl ',workouts);
               </Pressable>
             </View>
           </View>
+      
+          {sortedWorkouts.map(w => (
+                  <ProgramButtonRedizajn
+                    key={w.id}
+                    id={w.id}
+                    title={w.split}
+                    difficulty={w.diff}
+                    duration={w.duration}
+                    programType={w.focus}
+                    date={w.createdAt || 'N/A'}
+                    imageSource={w.image}
+                    // imageSource={w.img ? { uri: w.img } : require('../components/MainScreenComponents/legs2.png')}
+                    
+                    onPress={() =>{ 
+                      console.log('Slika:', w.img);
+                      
+                      navigation.navigate('Program', { 
+                      workoutId: w.id,
+                      workoutData: w  
+                    })}}
+                    onDelete={() => {
+                      Alert.alert(
+                        "Delete Workout",
+                        "Are you sure you want to delete this workout?",
+                        [
+                          { text: "Cancel", style: "cancel" },
+                          { 
+                            text: "Delete", 
+                            onPress: async () => {
+                              await db.runAsync(`DELETE FROM users WHERE id = ?`, [w.id]);
+                              const data = await db.getAllAsync('SELECT * FROM users ORDER BY createdAt DESC');
+                              setWorkout(data);
+                            }
+                          }
+                        ]
+                      );
+                    }}
+                  />
+                ))}
+              {/* reduxxx */}
+                        {/* {workouts.map(w => (
+                <ProgramButtonRedizajn
+                  key={w.id}
+                  id={w.id}
+                  title={w.split}
+                  difficulty={w.diff}
+                  duration={w.duration}
+                  programType={w.focus}
+                  date={w.date}
+                  imageSource={{ uri: w.img }} 
+                  onPress={() => navigation.navigate('Program', { 
+                    workoutId: w.id,
+                    workoutData: w  
+                  })}
+                  onDelete={deleteWorkoutDay}
+                />
+              ))} */}
 
-          {workouts.map(w => (
-  <ProgramButtonRedizajn
-    key={w.id}
-    id={w.id}
-    title={w.split}
-    difficulty={w.diff}
-    duration={w.duration}
-    programType={w.focus}
-    date={w.date}
-    imageSource={{ uri: w.img }} 
-    onPress={() => navigation.navigate('Program', { 
-      workoutId: w.id,
-      workoutData: w  
-    })}
-    onDelete={deleteWorkoutDay}
-  />
-))}
+               
+
 
           
         </ScrollView>

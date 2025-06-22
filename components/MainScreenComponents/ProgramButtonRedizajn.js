@@ -22,7 +22,7 @@ export default function ProgramButtonRedizajn({
   programType = 'Specificity',
   date = '1.1.2020',
   children = 'Who made it',
-  imageSource = require('./legs.png'),
+  imageSource ,
   id,
   onDelete,
   onPress,
@@ -33,7 +33,7 @@ export default function ProgramButtonRedizajn({
   const navigation = useNavigation();
   
 
-  // Boje za težinu programa
+  //  boje za tezinu programa
   const safeDifficulty = typeof difficulty === 'string' ? difficulty.toLowerCase() : '';
   const levelColor = (() => {
     switch (safeDifficulty) {
@@ -58,7 +58,7 @@ export default function ProgramButtonRedizajn({
       <View style={styles.programBox}>
         <View style={styles.contentContainer}>
           <View style={styles.imageContainer}>
-          <Image source={imageSource} style={styles.programImage} />
+          <Image source={ {uri :imageSource}} style={styles.programImage} />
       
           </View>
           <View style={styles.infoContainer}>
@@ -69,7 +69,7 @@ export default function ProgramButtonRedizajn({
             <Text style={styles.infoText}>
               <Icon name='bar-chart-outline' size={18}/>  {programType}</Text>
 
-            {/* Level indikator */}
+            {/* lvl indikator */}
             <View style={styles.levelContainer}>
               <View
                 style={[
@@ -92,7 +92,7 @@ export default function ProgramButtonRedizajn({
             <Text style={styles.footerText}>{children}</Text>
           </View>
           <View>
-            <Text style={styles.lightText}>Updated:</Text>
+            <Text style={styles.lightText}>Created:</Text>
             <Text style={styles.footerText}>{date}</Text>
           </View>
         </View>

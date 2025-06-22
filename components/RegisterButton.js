@@ -1,9 +1,10 @@
 import { Text, Pressable, View, StyleSheet } from "react-native";
 import { Dimensions } from "react-native";
-export default function RegisterButton(){
+export default function RegisterButton({onPress}){
    return(
       
-      < Pressable >
+      < Pressable 
+      onPress={onPress}>
       <View style={styles.buttonContainer}>
          <Text style={styles.buttonText}>Create new account</Text>
       </View>

@@ -1,8 +1,7 @@
-import { Text, View, StyleSheet, Pressable, Alert, StatusBar } from "react-native";
+import { Text, View, StyleSheet, Pressable, Alert, StatusBar, Image } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
-import { Image } from 'react-native';
+import { useState, useEffect } from 'react';
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { addWorkout } from "../store/workoutSlice";
@@ -10,9 +9,14 @@ import { setAll } from "../store/workoutSlice";
 import SelectDificulty from "../components/SelectDificulty";
 import WorkoutInfoInput from "../components/WorkoutInfoInput";
 
+//sqlite
+import * as SQLite from 'expo-sqlite';
+
 export default function NewWorkoutScreen() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+
 
   const [form, setForm] = useState({
     split: '',
@@ -43,7 +47,151 @@ export default function NewWorkoutScreen() {
     dispatch(addWorkout(workout));
     navigation.goBack();
   };
+ //PICK IMAGE ZA REDUX
+  // const pickImage = async () => {
+  //   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //   if (status !== 'granted') {
+  //     Alert.alert('Permission denied', 'Allow access to media library to upload images.');
+  //     return;
+  //   }
 
+  //   const result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 0.8,
+  //   });
+
+  //   if (!result.canceled) {
+  //     console.log(dispatch(setImage(result.assets[0].uri)));
+  //   }
+  // };
+
+
+  // Korištenje jednog stanja za formu
+  const [formData, setFormData] = useState({
+    split: '',
+    duration: '',
+    focus: '',
+    diff: '',
+    image: '',
+  });
+
+  const [db, setDb] = useState(null);
+  const [dbReady, setDbReady] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+  
+    const initDB = async () => {
+      try {
+        const dbConn = await SQLite.openDatabaseAsync('NewBlock.db');
+        console.log('DB opened:', dbConn);
+    
+          //ne zaboravit maknit kasnije🛑🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘
+        // await dbConn.execAsync(`DROP TABLE IF EXISTS users`);
+
+        await dbConn.execAsync(`
+          CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            split TEXT NOT NULL,
+            duration TEXT NOT NULL,
+            focus TEXT NOT NULL,
+            diff TEXT NOT NULL,
+            image TEXT,
+            createdAt TEXT DEFAULT (DATE('now'))
+          );
+        `);
+    
+        setDb(dbConn);
+        setDbReady(true);
+      } catch (e) {
+        console.error('Baza nije kreirana:', e);
+        Alert.alert('Error', 'Db not initialized');
+      }
+    };
+    
+  
+    initDB();
+  
+    return () => {
+      isMounted = false;
+      if (db) {
+        db.closeAsync().catch(e => console.warn('DB close error:', e));
+      }
+    };
+  }, []);
+  
+
+  //spremanje u bazu
+  const handleCreate = async () => {
+    if (loading || !db) return;
+
+    if (!formData.split || !formData.duration || !formData.focus || !formData.diff) {
+      Alert.alert("Greška", "Ispuni sva polja");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await db.withTransactionAsync(async () => {
+        const result = await db.runAsync(
+          `INSERT INTO users (split, duration, focus, diff, image) VALUES (?, ?, ?, ?, ?)`,
+          [
+            formData.split,
+            formData.duration,
+            formData.focus,
+            formData.diff,
+            formData.image,
+          ]
+        );
+        console.log("Blok kreiran: ", result);
+        console.log("slika ",formData.image );
+      });
+
+      Alert.alert("Saved", "Blok je uspješno kreiran");
+      navigation.navigate('MainScreen');
+      setFormData({
+        split: '',
+        duration: '',
+        focus: '',
+        diff: '',
+        image: '',
+      });
+
+    } catch (error) {
+      console.log("Block creation error", error);
+      Alert.alert('Error', "Greška kod spremanja bloka");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //PICK IMAGE ZA REDUX
+  // const pickImage = async () => {
+  //   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //   if (status !== 'granted') {
+  //     Alert.alert('Permission denied', 'Allow access to media library to upload images.');
+  //     return;
+  //   }
+
+  //   const result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 0.8,
+  //   });
+
+  //   if (!result.canceled) {
+  //     console.log(dispatch(setImage(result.assets[0].uri)));
+  //   }
+  // };
+
+  //PICK IMAGE ZA SQLITE
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -53,14 +201,17 @@ export default function NewWorkoutScreen() {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.8,
     });
 
-    if (!result.canceled) {
-      console.log(dispatch(setImage(result.assets[0].uri)));
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const selectedImageUri = result.assets[0].uri;
+      setFormData(prev => ({
+        ...prev,
+        image: selectedImageUri,
+      }));
     }
   };
 
@@ -72,34 +223,40 @@ export default function NewWorkoutScreen() {
         </View>
 
         <WorkoutInfoInput
-          onChangeText={text => handleChange('split', text)}
+          // onChangeText={text => handleChange('split', text)}
+          onChangeText={text => setFormData(prev => ({ ...prev, split: text }))}
           inputGuide="Weekly split"
           inputGuideSugestion="PPL, Upper/Lower, Chest/Back..."
           placeHolderText="Enter split"
         />
 
         <WorkoutInfoInput
-          onChangeText={text => handleChange('duration', text)}
+          // onChangeText={text => handleChange('duration', text)}
+          onChangeText={text => setFormData(prev => ({ ...prev, duration: text }))}
           inputGuide="Duration"
           inputGuideSugestion="5 weeks, 12 weeks..."
           placeHolderText="Enter Duration"
         />
 
         <WorkoutInfoInput
-          onChangeText={text => handleChange('focus', text)}
+          // onChangeText={text => handleChange('focus', text)}
+          onChangeText={text => setFormData(prev => ({ ...prev, focus: text }))}
           inputGuide="Main Focus"
           inputGuideSugestion="Powerlifting, BodyBuilding..."
           placeHolderText="Input"
         />
 
-        <SelectDificulty onSelect={text => handleChange('diff', text)} />
+        <SelectDificulty
+          // onSelect={text => handleChange('diff', text)}
+          onSelect={text => setFormData(prev => ({ ...prev, diff: text }))}
+        />
 
         <Pressable onPress={pickImage}>
           <View style={styles.imageUploadContainer}>
-            {image ? (
+            {formData.image ? (
               <View style={styles.imageBox}>
                 <Image
-                  source={{ uri: image }}
+                  source={{ uri: formData.image }}
                   style={styles.previewImage}
                   resizeMode="cover"
                 />
@@ -128,7 +285,8 @@ export default function NewWorkoutScreen() {
               styles.confirmButton,
               pressed && styles.buttonPressed,
             ]}
-            onPress={handleSave}
+            // onPress={handleSave}
+            onPress={handleCreate}
           >
             <Text style={[styles.buttonText, styles.confirmButtonText]}>Save</Text>
           </Pressable>
@@ -217,3 +375,4 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+

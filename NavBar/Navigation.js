@@ -14,7 +14,8 @@ import NewWorkoutScreen from '../screens/NewWorkoutScreen';
 import WeekScreen from '../screens/WeeksScreen';
 // import LoginScreen from '../screens/LoginScreen';
 import Colors from '../constants/Colors';
-
+import RegisterScreen from '../screens/RegisterScreen';
+import LoginScreen from '../screens/LoginScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -53,13 +54,19 @@ function TabNavigator() {
 export default function Navigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={{ headerShown: false }}
+      initialRouteName="MainScreen">
 
         <Stack.Screen name="RootTabs" component={TabNavigator} />
 
         <Stack.Screen name="WeekScreen" component={WeekScreen}/>
         <Stack.Screen name="NewWorkoutScreen" component={NewWorkoutScreen} />
         <Stack.Screen  name = "MainScreen" component={MainScreen}/>
+        <Stack.Screen  name = "RegisterScreen" component={RegisterScreen}/>
+        <Stack.Screen  name = "LoginScreen" component={LoginScreen}/>
+
+        
+
       </Stack.Navigator>
     </NavigationContainer>
   );

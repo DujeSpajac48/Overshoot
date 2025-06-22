@@ -2,15 +2,27 @@ import { Text, Pressable, View, StyleSheet } from "react-native";
 import { Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-export default function LoginButton(){
+
+export default function LoginButton({onPress}){
    const navigation = useNavigation();
+
 
 
    return(
       
+
+
+
       < Pressable  
-      onPress={() => navigation.replace('MainScreen')}>
-      <View style={styles.buttonContainer}>
+      onPress={() => navigation.replace('MainScreen')}
+      // onPress={onPress}
+      style={({ pressed })=>[
+         styles.buttonContainer ,
+         pressed && styles.buttonPressed
+      ]}
+     // style={styles.buttonContainer}
+      >
+      <View >
          <Text style={styles.buttonText}>Login</Text>
       </View>
       </Pressable >
@@ -35,5 +47,8 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       color:'white',
       fontWeight: 'bold'
-   }
+   },
+   buttonPressed:{
+      transform: [{scale : 0.98}]
+   },
 })
