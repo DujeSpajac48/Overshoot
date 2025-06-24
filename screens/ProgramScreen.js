@@ -67,7 +67,7 @@ export default function ProgramScreen() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <SafeAreaView style={styles.safeArea} edges={['top','bottom']}>
 
         <View style={styles.headerContainer}>
           <View style={styles.dayContainer}>

@@ -1,13 +1,34 @@
 import {Text,View,StyleSheet,Pressable,TextInput} from 'react-native'
 import Icon from "react-native-vector-icons/Ionicons";
 
-export default function DaysPreset({index}){
+import * as SQLite from 'expo-sqlite';
+import initDB from '../SQLite/database';
+import { useState } from 'react';
+
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+
+export default function DaysPreset({dayNum}){
+
+
+   const navigation = useNavigation();
+   const route = useRoute();
+
+
+
    return(
 
       <View style={styles.dayButton}>
-                     <Text>Day {index}</Text>
-                     <TextInput> Chest</TextInput>
-                     <Pressable  style={{paddingLeft: 12,paddingVertical: 12,}}>
+                     <Text>Day {dayNum}</Text>
+                     <TextInput
+                     placeholder='Muscle Group'
+                     placeholderTextColor={'#888888'}
+
+                     /> 
+                     <Pressable 
+                     onPress={()=> navigation.navigate('Program')}
+                     
+                     style={{paddingLeft: 12,paddingVertical: 12,}}>
                         <Icon name='enter-outline' size={24}/>
                      </Pressable>
       </View>       

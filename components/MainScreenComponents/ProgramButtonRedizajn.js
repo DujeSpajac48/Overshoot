@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 const { width, height } = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/Ionicons';
 
+import { useRoute } from '@react-navigation/native';
 
 export default function ProgramButtonRedizajn({
   title = 'Muscle group',
@@ -26,10 +27,10 @@ export default function ProgramButtonRedizajn({
   id,
   onDelete,
   onPress,
-
+//dodat da je children ime korisnika kad se registrira ili mozda username?
 }) {
 
-
+  
   const navigation = useNavigation();
   
 
@@ -44,14 +45,20 @@ export default function ProgramButtonRedizajn({
       case 'advanced':
         return '#FF715B';
       default:
-        return '#555'; // Ako nije prepoznato
+        return '#555'; // dsa
     }
   })();
+
+ 
 
   return (
     
     <Pressable
-      onPress={()=> navigation.navigate('WeekScreen')}
+      // onPress={()=> navigation.navigate('WeekScreen')}
+      onPress={() => navigation.navigate('WeekScreen', { userId: id })}
+
+
+
       onLongPress={() => onDelete(id)}
       style={({ pressed }) => [{ transform: [{ scale: pressed ? 0.98 : 1 }] }]}
     >
@@ -65,7 +72,7 @@ export default function ProgramButtonRedizajn({
             <Text style={styles.infoText}>
               <Icon name='barbell' size={18}/>  {title}</Text>
             <Text style={styles.infoText}>
-              <Icon name="calendar-outline" size={18}/>  {duration}</Text>
+              <Icon name="calendar-outline" size={18}/>  {duration} weeks</Text>
             <Text style={styles.infoText}>
               <Icon name='bar-chart-outline' size={18}/>  {programType}</Text>
 
@@ -101,18 +108,7 @@ export default function ProgramButtonRedizajn({
   );
 }
 
-// PropTypes za provjeru tipova
-ProgramButtonRedizajn.propTypes = {
-  title: PropTypes.string,
-  difficulty: PropTypes.string,
-  duration: PropTypes.string,
-  programType: PropTypes.string,
-  date: PropTypes.string,
-  children: PropTypes.string,
-  imageSource: PropTypes.any,
-  id: PropTypes.any.isRequired,
-  onDelete: PropTypes.func.isRequired,
-};
+
 
 // Stilovi
 const styles = StyleSheet.create({
@@ -122,7 +118,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 17,
     borderBottomRightRadius: 17,
     borderColor: '#555555',
-    width: width - 20, // Smanjio širinu za malo razmaka
+    width: width - 20, 
     height: height * 0.32,
     marginVertical: 8,
     borderRadius: 16,

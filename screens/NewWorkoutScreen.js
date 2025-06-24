@@ -41,7 +41,7 @@ export default function NewWorkoutScreen() {
       ...form,
       id: Date.now(),
       date: new Date().toLocaleDateString(),
-      img: image, // Including the image URI here
+      img: image,
     };
 
     dispatch(addWorkout(workout));
@@ -69,7 +69,7 @@ export default function NewWorkoutScreen() {
   // };
 
 
-  // Korištenje jednog stanja za formu
+
   const [formData, setFormData] = useState({
     split: '',
     duration: '',
@@ -93,15 +93,17 @@ export default function NewWorkoutScreen() {
           //ne zaboravit maknit kasnije🛑🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘
         // await dbConn.execAsync(`DROP TABLE IF EXISTS users`);
 
-        await dbConn.execAsync(`
-          CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            split TEXT NOT NULL,
-            duration TEXT NOT NULL,
-            focus TEXT NOT NULL,
-            diff TEXT NOT NULL,
-            image TEXT,
-            createdAt TEXT DEFAULT (DATE('now'))
+          await dbConn.execAsync(`
+            CREATE TABLE IF NOT EXISTS users (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              split TEXT NOT NULL,
+              duration INTEGER NOT NULL,
+              focus TEXT NOT NULL,
+              diff TEXT NOT NULL,
+              image TEXT,
+              createdAt TEXT DEFAULT (DATE('now'))
+
+
           );
         `);
     
@@ -156,7 +158,7 @@ export default function NewWorkoutScreen() {
       navigation.navigate('MainScreen');
       setFormData({
         split: '',
-        duration: '',
+        duration: 1,
         focus: '',
         diff: '',
         image: '',
@@ -236,6 +238,8 @@ export default function NewWorkoutScreen() {
           inputGuide="Duration"
           inputGuideSugestion="5 weeks, 12 weeks..."
           placeHolderText="Enter Duration"
+          keyboardType='numeric'
+          
         />
 
         <WorkoutInfoInput

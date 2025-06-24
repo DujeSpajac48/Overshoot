@@ -58,7 +58,8 @@ export default function Navigation() {
       initialRouteName="MainScreen">
 
         <Stack.Screen name="RootTabs" component={TabNavigator} />
-
+      
+        <Stack.Screen name="Program" component={ProgramScreen}/>
         <Stack.Screen name="WeekScreen" component={WeekScreen}/>
         <Stack.Screen name="NewWorkoutScreen" component={NewWorkoutScreen} />
         <Stack.Screen  name = "MainScreen" component={MainScreen}/>

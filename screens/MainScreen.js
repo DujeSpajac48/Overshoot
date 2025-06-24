@@ -136,9 +136,10 @@ const isFocused = useIsFocused();
   const sortedWorkouts = [...workout].reverse();
 
 
-  return (
-    <>
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
+  return (  
+    <>  
+    {/* bez bottom sjebe se kad se minjaju screnovi  */}
+      <SafeAreaView style={styles.safeArea} edges={['top','bottom']}>
         <View style={styles.headerContainer}>
           <Text style={styles.textStyle}>OVER</Text>
           <Text style={styles.textStyleShot}>SHOOT</Text>
@@ -169,43 +170,41 @@ const isFocused = useIsFocused();
           </View>
       
           {sortedWorkouts.map(w => (
-                  <ProgramButtonRedizajn
-                    key={w.id}
-                    id={w.id}
-                    title={w.split}
-                    difficulty={w.diff}
-                    duration={w.duration}
-                    programType={w.focus}
-                    date={w.createdAt || 'N/A'}
-                    imageSource={w.image}
-                    // imageSource={w.img ? { uri: w.img } : require('../components/MainScreenComponents/legs2.png')}
-                    
-                    onPress={() =>{ 
-                      console.log('Slika:', w.img);
-                      
-                      navigation.navigate('Program', { 
-                      workoutId: w.id,
-                      workoutData: w  
-                    })}}
-                    onDelete={() => {
-                      Alert.alert(
-                        "Delete Workout",
-                        "Are you sure you want to delete this workout?",
-                        [
-                          { text: "Cancel", style: "cancel" },
-                          { 
-                            text: "Delete", 
-                            onPress: async () => {
-                              await db.runAsync(`DELETE FROM users WHERE id = ?`, [w.id]);
-                              const data = await db.getAllAsync('SELECT * FROM users ORDER BY createdAt DESC');
-                              setWorkout(data);
-                            }
-                          }
-                        ]
-                      );
-                    }}
-                  />
-                ))}
+  <ProgramButtonRedizajn
+    key={w.id}
+    id={w.id}
+    title={w.split}
+    difficulty={w.diff}
+    duration={w.duration}
+    programType={w.focus}
+    date={w.createdAt || 'N/A'}
+    imageSource={w.image}
+    onPress={() => navigation.navigate('WeekScreen', { 
+      userId: id,
+      workoutId: w.id,  //id programa u koji se ulazi
+      workoutData: w  // svi podatci tog progrmma
+    })}
+    onDelete={() => {
+      Alert.alert(
+        "Delete Workout",
+        "Are you sure you want to delete this workout?",
+        [
+          { text: "Cancel", style: "cancel" },
+          { 
+            text: "Delete", 
+            onPress: async () => {
+              await db.runAsync(`DELETE FROM users WHERE id = ?`, [w.id]);
+              const data = await db.getAllAsync('SELECT * FROM users ORDER BY createdAt DESC');
+              setWorkout(data);
+            }
+          }
+        ]
+      );
+    }}
+  />
+))}
+
+
               {/* reduxxx */}
                         {/* {workouts.map(w => (
                 <ProgramButtonRedizajn
@@ -245,7 +244,7 @@ const styles = StyleSheet.create({
 
     flex:1,
     alignContent: 'center',
-    backgroundColor: '#f6f6f9',
+    backgroundColor: Colors.mainBackground,
   },
   topButton:{
     width: '100%' 
@@ -267,7 +266,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderBottomWidth: 0.6,
     marginHorizontal: '7%',
-    backgroundColor: '#f6f6f9'
+    // backgroundColor: '#f6f6f9'
+    backgroundColor: Colors.mainBackground,
   },
   textStyle:{
     fontSize: 40,

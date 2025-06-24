@@ -11,7 +11,8 @@ export default function WorkoutInfoInput(
    {inputGuide='Sta je ode',
    inputGuideSugestion= 'Sta bi se tribalo unit',
    placeHolderText='Ode se to unosi',
-   value,onChangeText
+          keyboardType,
+          value,onChangeText,
 }){
 
 
@@ -36,6 +37,8 @@ export default function WorkoutInfoInput(
          style={styles.workoutInfo}
          placeholder={placeHolderText}
          placeholderTextColor={'#A0A0A0'}
+         keyboardType={keyboardType}
+
          />
 
 
