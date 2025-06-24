@@ -6,6 +6,8 @@ import DaysPreset from './DayPreset';
 import { useRoute } from '@react-navigation/native';
 import initDB from '../SQLite/database';
 import { useCallback } from 'react';
+
+import { useNavigation } from '@react-navigation/native';
 export default function WeekDays({ id, userId }) {
    const [dayCnt, setDayCnt] = useState(0);
    const [weekId, setWeekId] = useState(null);
@@ -124,6 +126,7 @@ export default function WeekDays({ id, userId }) {
    };
  
  
+   const naviation = useNavigation();
 
   return (
     <>
@@ -135,7 +138,22 @@ export default function WeekDays({ id, userId }) {
         <View style={styles.daysContainer}>
           
           {[...Array(dayCnt)].map((_, index) => (
-            <DaysPreset key={index} dayNum={index + 1} />
+            <DaysPreset 
+            key={index} 
+            dayNum={index + 1}
+            id={id} 
+            userId={userId}
+            onPress={ ()=> {
+              naviation.navigate('Program', { 
+                userId: userId,
+                workoutId: id,
+              });
+            }}
+          />
+          
+
+
+             
           ))}
 
           <View style={styles.butttonContainer}>

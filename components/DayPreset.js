@@ -1,18 +1,17 @@
 import {Text,View,StyleSheet,Pressable,TextInput} from 'react-native'
 import Icon from "react-native-vector-icons/Ionicons";
 
-import * as SQLite from 'expo-sqlite';
-import initDB from '../SQLite/database';
-import { useState } from 'react';
+
 
 import { useNavigation } from '@react-navigation/native';
-import { useRoute } from '@react-navigation/native';
 
-export default function DaysPreset({dayNum}){
+
+export default function DaysPreset({dayNum,id,userId}){
 
 
    const navigation = useNavigation();
-   const route = useRoute();
+
+
 
 
 
@@ -26,7 +25,12 @@ export default function DaysPreset({dayNum}){
 
                      /> 
                      <Pressable 
-                     onPress={()=> navigation.navigate('Program')}
+                     onPress={() => navigation.navigate('Program', {
+                        dayNum,
+                        userId,
+                        id
+                      })}
+                      
                      
                      style={{paddingLeft: 12,paddingVertical: 12,}}>
                         <Icon name='enter-outline' size={24}/>
