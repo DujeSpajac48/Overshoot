@@ -45,6 +45,12 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "e88bd161-bec1-4aa6-a678-d3805e8f7ec9"
+      }
+    },
+    "owner": "dujespajic"
   }
 }

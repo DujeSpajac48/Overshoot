@@ -88,7 +88,7 @@ export default function RegisterScreen() {
 
     if (loading) return;
 
-    // Validation
+
     if (!formData.firstName || !formData.lastName || !formData.username || 
         !formData.email || !formData.password || !formData.confirmPassword) {
       Alert.alert('Error', 'Please fill all fields');
@@ -108,7 +108,7 @@ export default function RegisterScreen() {
     setLoading(true);
 
     try {
-      // Use transaction for better error handling
+
       await db.withTransactionAsync(async () => {
         const result = await db.runAsync(
           `INSERT INTO users 

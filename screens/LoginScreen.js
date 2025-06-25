@@ -8,14 +8,14 @@ import LoginButton from '../components/LoginButton';
 import RegisterButton from '../components/RegisterButton';
 import SpacerLine from '../components/SpacerLine';
 
-// SQLite Database initialization
+
 const db = SQLite.openDatabaseAsync('userLogin.db');
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Ispravljena funkcija handleLogin
+
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
@@ -38,7 +38,7 @@ export default function LoginScreen({ navigation }) {
       });
     } catch (error) {
       console.error('Login error:', error);
-      Alert.alert('Error', 'Something went wrong during login');
+      Alert.alert('Error', '  login o');
     }
   };
 
