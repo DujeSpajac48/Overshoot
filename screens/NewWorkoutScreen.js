@@ -91,7 +91,12 @@ export default function NewWorkoutScreen() {
         console.log('DB opened:', dbConn);
     
           //ne zaboravit maknit kasnije🛑🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘🆘
-        // await dbConn.execAsync(`DROP TABLE IF EXISTS users`);
+          // await dbConn.execAsync(`DROP TABLE IF EXISTS workouts`);
+          // await dbConn.execAsync(`DROP TABLE IF EXISTS day`);
+          // await dbConn.execAsync(`DROP TABLE IF EXISTS weeks`);
+          // await dbConn.execAsync(`DROP TABLE IF EXISTS users`);
+          
+
 
           await dbConn.execAsync(`
             CREATE TABLE IF NOT EXISTS users (

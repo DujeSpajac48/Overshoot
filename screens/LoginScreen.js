@@ -78,7 +78,7 @@ export default function LoginScreen({ navigation }) {
               <Text style={{ color: 'blue' }}>Forgot password?</Text>
             </View>
 
-            {/* Poziv funkcije handleLogin pri kliku na LoginButton */}
+
             <LoginButton onPress={handleLogin} />
             <RegisterButton onPress={() => navigation.navigate("RegisterScreen")} />
 

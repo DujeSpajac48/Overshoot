@@ -7,7 +7,7 @@ export default function ProfileScreen() {
   return (
     <>
     
-      <View><Text>Haloooo</Text></View>
+      <View><Text>User login neradi pa ni ovo nece se radit 😩</Text></View>
 
       
     </>

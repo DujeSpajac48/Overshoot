@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { StatusBar } from 'expo-status-bar';
 import Navigation from './NavBar/Navigation';
 import store from './store/store';
-import LoginNav from './NavBar/LoginNav';
+
 import LoginScreen from './screens/LoginScreen'
 import RegisterScreen from './screens/RegisterScreen'
 import SQLite from 'react-native-sqlite-storage';
@@ -32,9 +32,9 @@ import SQLite from 'react-native-sqlite-storage';
 // };
 export default function App() {
   return (
-    <Provider store={store}>
+    <Provider store={store}>  
       <StatusBar barStyle="dark-content" backgroundColor='white' />
-      {/* <LoginNav/> */}
+
       <Navigation />
       {/* <LoginScreen/> */}
       

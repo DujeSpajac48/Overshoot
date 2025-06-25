@@ -143,12 +143,12 @@ export default function WeekDays({ id, userId }) {
             dayNum={index + 1}
             id={id} 
             userId={userId}
-            onPress={ ()=> {
-              naviation.navigate('Program', { 
-                userId: userId,
-                workoutId: id,
-              });
-            }}
+            // onPress={ ()=> {
+            //   naviation.navigate('Program', { 
+            //     // userId: userId,
+            //     // workoutId: id,
+            //   });
+            // }}
           />
           
 

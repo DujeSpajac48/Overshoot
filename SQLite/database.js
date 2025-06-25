@@ -1,21 +1,29 @@
 import * as SQLite from 'expo-sqlite';
 import { Alert } from 'react-native';
 
+// ovo je da je samo 1 "kanal" otvoren na bazu 😌
+let dbConn = null;
 
-//ovo je da je samo 1 "kanal" otvoren na bazu 😌
-let dbConn = null; 
 const initDB = async () => {
   try {
     if (dbConn) {
-
       return dbConn;
     }
 
     dbConn = await SQLite.openDatabaseAsync('NewBlock.db');
     console.log('Database opened:', dbConn);
-
+    
+    
+    // await dbConn.execAsync(`DROP TABLE IF EXISTS workouts`);
+    // await dbConn.execAsync(`DROP TABLE IF EXISTS day`);
+    // await dbConn.execAsync(`DROP TABLE IF EXISTS weeks`);
+    // await dbConn.execAsync(`DROP TABLE IF EXISTS users`);
     // USERs tablica
+    //
+
+    //users tablica, tribalo bi pisat blok, al san sjeba
     await dbConn.execAsync(`
+      
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         split TEXT NOT NULL,
@@ -25,9 +33,11 @@ const initDB = async () => {
         image TEXT,
         createdAt TEXT DEFAULT (DATE('now'))
       );
-    `);
+      
+    `
+  );
 
-    // WEEKS tablica
+    // WeeKS tablica
     await dbConn.execAsync(`
       CREATE TABLE IF NOT EXISTS weeks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,21 +55,31 @@ const initDB = async () => {
         dayNum INTEGER NOT NULL,
         weekId INTEGER,
         muscleGroup TEXT NOT NULL,
+        userId INTEGER,
+        FOREIGN KEY (userId) REFERENCES users(id),
         FOREIGN KEY (weekId) REFERENCES weeks(id)
       );
     `);
 
-    //info o vjezbi
+    // VJEŽBE tablica - workouts
     await dbConn.execAsync(`
-      CREATE TABLE IF NOT EXISTS vjezba(
+      CREATE TABLE IF NOT EXISTS workouts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-         name TEXT NOT NULL,
-         setNum INTEGER NOT NULL,
-         Load INTEGER NOT NULL,
-         Reps INTEGER NOT NULL,
-         Rpe INTEGER NOT NULL
-
-      );`);
+        name TEXT,
+        setNum INTEGER DEFAULT 1,
+        load INTEGER,
+        reps INTEGER,
+        rpe INTEGER,
+        userId INTEGER,
+        weekId INTEGER,
+        dayId INTEGER,
+        createdAt TEXT DEFAULT (DATE('now')),
+        FOREIGN KEY (userId) REFERENCES users(id),
+        FOREIGN KEY (weekId) REFERENCES weeks(id),
+        FOREIGN KEY (dayId) REFERENCES day(id)
+      );
+    `);
+    
 
     console.log('All tables created.');
     return dbConn;
