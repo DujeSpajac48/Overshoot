@@ -64,7 +64,10 @@ export default function WeekScreen({Id}) {
     <SafeAreaView style={styles.safeAreaContainer}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {weeks.map((w) => (
-          <WeekDays key={w.id} id={w.id} userId={userId} />
+          <WeekDays 
+          key={w.id} id={w.id} userId={userId} 
+          
+          z/>
         ))}
       </ScrollView>
     </SafeAreaView>

@@ -180,7 +180,7 @@ const isFocused = useIsFocused();
     date={w.createdAt || 'N/A'}
     imageSource={w.image}
     onPress={() => navigation.navigate('WeekScreen', { 
-      userId: id,
+      userId: w.id,
       workoutId: w.id,  //id programa u koji se ulazi
       workoutData: w  // svi podatci tog progrmma
     })}

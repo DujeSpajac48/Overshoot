@@ -72,6 +72,7 @@ const initDB = async () => {
         rpe INTEGER,
         userId INTEGER,
         weekId INTEGER,
+        exerNum INTEGER,
         dayId INTEGER,
         createdAt TEXT DEFAULT (DATE('now')),
         FOREIGN KEY (userId) REFERENCES users(id),

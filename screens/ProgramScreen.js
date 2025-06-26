@@ -1,4 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
+
 import {
   ScrollView,
   StyleSheet,
@@ -15,11 +15,13 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { useEffect, useState } from 'react';
 import Colors from '../constants/Colors';
-import TreningBlok from '../components/TreningBlok';
 import Workout from '../components/Workout';
-import ExitButton from '../components/ExitButton';
 
 import { useRoute } from '@react-navigation/native';
+
+
+import * as SQLite from 'expo-sqlite';
+import initDB from '../SQLite/database';
 
 export default function ProgramScreen() {
   const [isRunning, setIsRunning] = useState(false);
@@ -48,17 +50,17 @@ export default function ProgramScreen() {
       .padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
   };
 
-  const [trening, addTrening] = useState([{ id: Date.now() }]);
+  // const [trening, addTrening] = useState([{ id: Date.now() }]);
 
-  function treningPressHandler() {
-    addTrening((prev) => [...prev, { id: Date.now() }]);
-  }
+  // function treningPressHandler() {
+  //   addTrening((prev) => [...prev, { id: Date.now() }]);
+  // }
 
-  function deleteTrening(idToRemove) {
-    if (trening.length > 1) {
-      addTrening((prev) => prev.filter((item) => item.id !== idToRemove));
-    }
-  }
+  // function deleteTrening(idToRemove) {
+  //   if (trening.length > 1) {
+  //     addTrening((prev) => prev.filter((item) => item.id !== idToRemove));
+  //   }
+  // }
 
   const { dayNum, userId, workoutId, dayId } = useRoute().params;
 

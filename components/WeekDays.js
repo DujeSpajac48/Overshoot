@@ -1,132 +1,151 @@
 import { Text, View, StyleSheet, Pressable, Alert } from 'react-native';
 import Icon from "react-native-vector-icons/Ionicons";
 import SmileBorder from './smiley';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import DaysPreset from './DayPreset';
-import { useRoute } from '@react-navigation/native';
+import { useIsFocused, useRoute, useNavigation } from '@react-navigation/native';
 import initDB from '../SQLite/database';
-import { useCallback } from 'react';
+import { SQLiteDatabase } from 'expo-sqlite';
 
-import { useNavigation } from '@react-navigation/native';
 export default function WeekDays({ id, userId }) {
-   const [dayCnt, setDayCnt] = useState(0);
-   const [weekId, setWeekId] = useState(null);
- 
-  
-   const getOrCreateWeekId = useCallback(async (dbConn, weekNum) => {
-     try {
-       //peca user id da bi svaki program bia zaseban
-       const existing = await dbConn.getFirstAsync(
-         `SELECT id FROM weeks WHERE weekNum = ? AND userId = ?`,
-         [weekNum, userId]
-       );
-       
-       if (existing?.id) return existing.id;
- 
+  const [weekId, setWeekId] = useState(null);
+  const [days, setDays] = useState([]); // lista svih dana
+  const [db, setDb] = useState(null);
+  const [Program, setProgram] = useState([]);
 
-       const { lastInsertRowId } = await dbConn.runAsync(
-         `INSERT INTO weeks (weekNum, userId) VALUES (?, ?)`,
-         [weekNum, userId]
-       );
-       
-       return lastInsertRowId;
-     } catch (e) {
-       console.error('Get or create wk neradi opet:', e);
-       return null;
-     }
-   }, [userId]);
- 
-   const fetchDayCount = useCallback(async (weekId) => {
-     try {
-       const db = await initDB();
-       const result = await db.getAllAsync(
-         `SELECT COUNT(*) as count FROM day WHERE weekId = ?`,
-         [weekId]
-       );
-       setDayCnt(result[0].count || 0);
-     } catch (e) {
-       console.error('Day cnt :', e);
-     }
-   }, []);
- 
-   useEffect(() => {
-     const loadWeekData = async () => {
-       try {
-         const dbConn = await initDB();
-         const actualWeekId = await getOrCreateWeekId(dbConn, id);
-         
-         if (actualWeekId) {
-           setWeekId(actualWeekId);
-           await fetchDayCount(actualWeekId);
-         }
-       } catch (e) {
-         console.error('Error week data:', e);
-       }
-     };
- 
-     if (userId) loadWeekData();
-   }, [id, userId, getOrCreateWeekId, fetchDayCount]);
- 
-   //dodaje jos 1 dan on click
-   const handleAddDay = async () => {
-     try {
-       const dbConn = await initDB();
-       
+  const isFocused = useIsFocused();
+  const navigation = useNavigation();
 
-       const actualWeekId = weekId || await getOrCreateWeekId(dbConn, id);
-       
-       if (!actualWeekId) {
-         Alert.alert("Error", "Nije napravilpo week");
-         return;
-       }
- 
-       //day num
-       const days = await dbConn.getAllAsync(
-         `SELECT COUNT(*) AS count FROM day WHERE weekId = ?`,
-         [actualWeekId]
-       );
-       const nextDayNum = (days[0]?.count || 0) + 1;
- 
-       //ubaxuje novi dan
-       await dbConn.runAsync(
-         `INSERT INTO day (dayNum, weekId, muscleGroup) VALUES (?, ?, ?)`,
-         [nextDayNum, actualWeekId, 'Push']
-       );
- 
-       if (!weekId) setWeekId(actualWeekId);
-       setDayCnt(prev => prev + 1);
-       
-     } catch (e) {
-       console.error('Nije uspija dodat day:', e);
-       Alert.alert("Day + erro", "Nije doda day");
-     }
-   };
- 
+  const getOrCreateWeekId = useCallback(async (dbConn, weekNum) => {
+    try {
+      const existing = await dbConn.getFirstAsync(
+        `SELECT id FROM weeks WHERE weekNum = ? AND userId = ?`,
+        [weekNum, userId]
+      );
 
-   const handleRemoveDay = async () => {
-     if (!weekId || dayCnt <= 1) {
-       Alert.alert("Warning", "Must have at least one day");
-       return;
-     }
- 
-     try {
-       const db = await initDB();
-       const result = await db.getAllAsync(
-         `SELECT id FROM day WHERE weekId = ? ORDER BY dayNum DESC LIMIT 1`,
-         [weekId]
-       );
- 
-       if (result.length > 0) {
-         await db.runAsync(`DELETE FROM day WHERE id = ?`, [result[0].id]);
-         setDayCnt(prev => prev - 1);
-       }
-     } catch (e) {
-       console.error('Error removing day:', e);
-     }
-   };
- 
- 
-   const naviation = useNavigation();
+      if (existing?.id) return existing.id;
+
+      const { lastInsertRowId } = await dbConn.runAsync(
+        `INSERT INTO weeks (weekNum, userId) VALUES (?, ?)`,
+        [weekNum, userId]
+      );
+
+      return lastInsertRowId;
+    } catch (e) {
+      console.error('Get or create week error:', e);
+      return null;
+    }
+  }, [userId]);
+
+  const fetchDays = useCallback(async (weekId) => {
+    try {
+      const db = await initDB();
+      const result = await db.getAllAsync(
+        `SELECT * FROM day WHERE weekId = ? ORDER BY dayNum ASC`,
+        [weekId]
+      );
+      setDays(result); // Spremamo prave podatke iz baze
+    } catch (e) {
+      console.error('Greška kod dohvata dana:', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    const loadWeekData = async () => {
+      try {
+        const dbConn = await initDB();
+        const actualWeekId = await getOrCreateWeekId(dbConn, id);
+
+        if (actualWeekId) {
+          setWeekId(actualWeekId);
+          await fetchDays(actualWeekId);
+        }
+      } catch (e) {
+        console.error('Error loading week data:', e);
+      }
+    };
+
+    if (userId) loadWeekData();
+  }, [id, userId, getOrCreateWeekId, fetchDays]);
+
+  const handleAddDay = async () => {
+    try {
+      const dbConn = await initDB();
+      const actualWeekId = weekId || await getOrCreateWeekId(dbConn, id);
+
+      if (!actualWeekId) {
+        Alert.alert("Error", "Nije napravljen tjedan");
+        return;
+      }
+
+      const daysResult = await dbConn.getAllAsync(
+        `SELECT COUNT(*) AS count FROM day WHERE weekId = ?`,
+        [actualWeekId]
+      );
+      const nextDayNum = (daysResult[0]?.count || 0) + 1;
+
+      await dbConn.runAsync(
+        `INSERT INTO day (dayNum, weekId, muscleGroup) VALUES (?, ?, ?)`,
+        [nextDayNum, actualWeekId, 'Push']
+      );
+
+      await fetchDays(actualWeekId); 
+    } catch (e) {
+      console.error('neradiiiiii dodavanje  dana:', e);
+      Alert.alert("krivo", "Nije dodan dan");
+    }
+  };
+
+  const handleRemoveDay = async () => {
+    if (!weekId || days.length <= 1) {
+      Alert.alert("Upozorenje", "Mora postojati barem jedan dan");
+      return;
+    }
+
+    try {
+      const db = await initDB();
+      const result = await db.getAllAsync(
+        `SELECT id FROM day WHERE weekId = ? ORDER BY dayNum DESC LIMIT 1`,
+        [weekId]
+      );
+
+      if (result.length > 0) {
+        await db.runAsync(`DELETE FROM day WHERE id = ?`, [result[0].id]);
+        await fetchDays(weekId);
+      }
+    } catch (e) {
+      console.error('greska  brisanje dana:', e);
+    }
+  };
+
+  useEffect(() => {
+    const loadDB = async () => {
+      try {
+        const database = await SQLite.openDatabaseAsync('NewBlock.db');
+        setDb(database);
+      } catch (e) {
+        Alert.alert("Greška", "Baza se nije otvorila: LoadDB", e);
+      }
+    };
+    loadDB();
+  }, []);
+
+  useEffect(() => {
+    if (!db) return;
+
+    const fetchData = async () => {
+      try {
+        const data = await db.getAllAsync('SELECT * FROM workouts ORDER BY createdAt ASC');
+        setProgram(data);
+        console.log('Baza workouts name : ', data);
+      } catch (e) {
+        Alert.alert("Greška", "Name nije učitan");
+        console.log('Name zaron: ', e);
+      }
+    };
+
+    fetchData();
+  }, [db, isFocused]);
 
   return (
     <>
@@ -136,37 +155,32 @@ export default function WeekDays({ id, userId }) {
 
       <View style={styles.mainContainer}>
         <View style={styles.daysContainer}>
-          
-          {[...Array(dayCnt)].map((_, index) => (
+          {days.map((day, index) => (
             <DaysPreset 
-            key={index} 
-            dayNum={index + 1}
-            id={id} 
-            userId={userId}
-            // onPress={ ()=> {
-            //   naviation.navigate('Program', { 
-            //     // userId: userId,
-            //     // workoutId: id,
-            //   });
-            // }}
-          />
-          
-
-
-             
+              key={day.id}
+              dayNum={day.dayNum}
+              muscleGroup={day.muscleGroup}
+              id={id}
+              userId={userId}
+              onPress={() => {
+                navigation.navigate('Program', {
+                  userId: day.id,
+                  
+                });
+              }}
+            />
           ))}
 
           <View style={styles.butttonContainer}>
             <Pressable style={styles.addDay} onPress={handleRemoveDay}>
               <Icon name="close-circle-outline" size={36} color={'red'} />
             </Pressable>
-             <Pressable
-               style={styles.addDay}
-               onPress={weekId ? handleAddDay : null} // ne dozvoli klik ako nema weekId  maknit kad proradi
-               >
-               <Icon name="add-circle-outline" size={36} color={weekId ? 'green' : 'gray'} />
-</Pressable>
-
+            <Pressable
+              style={styles.addDay}
+              onPress={weekId ? handleAddDay : null}
+            >
+              <Icon name="add-circle-outline" size={36} color={weekId ? 'green' : 'gray'} />
+            </Pressable>
           </View>
 
           <SmileBorder />
