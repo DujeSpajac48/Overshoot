@@ -50,17 +50,17 @@ export default function ProgramScreen() {
       .padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
   };
 
-  // const [trening, addTrening] = useState([{ id: Date.now() }]);
+  const [trening, addTrening] = useState([{ id: Date.now() }]);
 
-  // function treningPressHandler() {
-  //   addTrening((prev) => [...prev, { id: Date.now() }]);
-  // }
+  function treningPressHandler() {
+    addTrening((prev) => [...prev, { id: Date.now() }]);
+  }
 
-  // function deleteTrening(idToRemove) {
-  //   if (trening.length > 1) {
-  //     addTrening((prev) => prev.filter((item) => item.id !== idToRemove));
-  //   }
-  // }
+  function deleteTrening(idToRemove) {
+    if (trening.length > 1) {
+      addTrening((prev) => prev.filter((item) => item.id !== idToRemove));
+    }
+  }
 
   const { dayNum, userId, workoutId, dayId } = useRoute().params;
 

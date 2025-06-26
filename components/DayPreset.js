@@ -4,6 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import * as SQLite from 'expo-sqlite';
 import { useRoute } from '@react-navigation/native';
+
+
+import * as Animatable from 'react-native-animatable';
+
 export default function DaysPreset({ dayNum, id: weekId}) {
   const navigation = useNavigation();
   const [muscleGroup, setMuscleGroup] = useState('');
@@ -95,7 +99,11 @@ export default function DaysPreset({ dayNum, id: weekId}) {
 
   const {workoutId, userId} = useRoute().params;
   return (
-    <View style={styles.dayButton}>
+    <Animatable.View 
+    animation='slideInLeft'
+    duration={500}
+
+    style={styles.dayButton}>
       <Text style={styles.dayText}>Day {dayNum}</Text>
 
       <TextInput
@@ -105,11 +113,19 @@ export default function DaysPreset({ dayNum, id: weekId}) {
         onChangeText={setMuscleGroup}
       //   style={styles.input}
       />
+    <Animatable.View
 
-      <Pressable onPress={handleEnterProgram}>
+    animation='swing'
+    duration={3000}
+    delay={600}
+    >
+      <Pressable 
+      
+      onPress={handleEnterProgram}>
         <Icon name='enter-outline' size={24} />
       </Pressable>
-    </View>
+      </Animatable.View>
+    </Animatable.View>
   );
 }
 

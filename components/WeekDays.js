@@ -2,10 +2,17 @@ import { Text, View, StyleSheet, Pressable, Alert } from 'react-native';
 import Icon from "react-native-vector-icons/Ionicons";
 import SmileBorder from './smiley';
 import { useState, useEffect, useCallback } from 'react';
-import DaysPreset from './DayPreset';
+import DayPreset from './DayPreset';
 import { useIsFocused, useRoute, useNavigation } from '@react-navigation/native';
 import initDB from '../SQLite/database';
 import { SQLiteDatabase } from 'expo-sqlite';
+
+
+//animacija
+import { SlideInLeft } from 'react-native-reanimated';
+import * as Animatable from 'react-native-animatable';
+
+
 
 export default function WeekDays({ id, userId }) {
   const [weekId, setWeekId] = useState(null);
@@ -36,7 +43,7 @@ export default function WeekDays({ id, userId }) {
       return null;
     }
   }, [userId]);
-
+  
   const fetchDays = useCallback(async (weekId) => {
     try {
       const db = await initDB();
@@ -84,17 +91,14 @@ export default function WeekDays({ id, userId }) {
       );
       const nextDayNum = (daysResult[0]?.count || 0) + 1;
 
-      await dbConn.runAsync(
-        `INSERT INTO day (dayNum, weekId, muscleGroup) VALUES (?, ?, ?)`,
-        [nextDayNum, actualWeekId, 'Push']
-      );
-
-      await fetchDays(actualWeekId); 
     } catch (e) {
-      console.error('neradiiiiii dodavanje  dana:', e);
-      Alert.alert("krivo", "Nije dodan dan");
+      console.error('Neuspješno dodavanje dana:', e);
+      Alert.alert("Greška", "Nije dodan dan");
     }
   };
+
+
+
 
   const handleRemoveDay = async () => {
     if (!weekId || days.length <= 1) {
@@ -147,25 +151,34 @@ export default function WeekDays({ id, userId }) {
     fetchData();
   }, [db, isFocused]);
 
+//uljece ko raketa
+  const [justAddedDayId, setJustAddedDayId] = useState(null);
+
   return (
     <>
-      <View style={styles.headerTextContainer}>
+      <Animatable.View 
+
+      style={styles.headerTextContainer}
+      animation='slideInLeft'
+      duration={500}>
         <Text style={{ fontSize: 40 }}>Week {id}</Text>
-      </View>
+      </Animatable.View>
 
       <View style={styles.mainContainer}>
         <View style={styles.daysContainer}>
           {days.map((day, index) => (
-            <DaysPreset 
-              key={day.id}
+              <DayPreset
+              
+            key={day.id}  
               dayNum={day.dayNum}
               muscleGroup={day.muscleGroup}
               id={id}
               userId={userId}
               onPress={() => {
                 navigation.navigate('Program', {
-                  userId: day.id,
-                  
+                  userId: userId,
+                  dayId: day.id,
+                  dayNum: day.dayNum
                 });
               }}
             />
